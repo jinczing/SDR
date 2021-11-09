@@ -43,9 +43,10 @@ class SDR(TransformersBase):
             inputs,
             masked_lm_labels=labels,
             non_masked_input_ids=batch[0],
-            sample_labels=batch[-1],
+            sample_labels=batch[-2],
             run_similarity=True,
             run_mlm=True,
+            matching_table=batch[-1],
         )
 
         self.losses["mlm_loss"] = outputs[0]

@@ -84,6 +84,23 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
 
         self.labels = [idx_article for idx_article, _, _ in self.indices_map]
 
+        # prepare for ground truth matching table
+        if self.hparams.use_matching_table:
+        	inds_table = [int(tup[1]) for tup in self.examples]
+        	path = self.hparams.matching_flie_path
+        	matcing_table = torch.empty(len(self.labels), len(self.labels))
+        	with open(path, 'r') as f:
+        		reader = csv.reader(f)
+        		for i, r in enumerate(reader):
+        			if not i:
+        				continue
+        			l = list(map(int, r))
+        			matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
+        			matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
+        	self.matching_table = matching_table
+        else:
+        	self.matching_table = None
+
     def save_load_splitted_dataset(self, mode, cached_features_file, raw_data_path):
         proccessed_path = f"{cached_features_file}_EXAMPLES"
         if not os.path.exists(proccessed_path):
@@ -140,6 +157,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             idx_sentence,
             item,
             self.labels[item],
+            self.matching_table,
         )
 
 class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphsSentences):
@@ -165,6 +183,7 @@ class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphs
                         idx_sentence,
                         item,
                         self.labels[item],
+                        self.matching_table,
                     )
                 )
             sections.append(sentences)

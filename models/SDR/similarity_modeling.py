@@ -14,6 +14,8 @@ from transformers.modeling_bert import BertLayerNorm, BertPreTrainedModel
 from transformers.modeling_roberta import RobertaModel, RobertaLMHead
 from pytorch_metric_learning.distances import CosineSimilarity
 
+from utils.metrics_utils import MultiSimilarityMinerWithMatchingTable, ContrastiveLossWithMatchingTable
+
 
 class SimilarityModeling(BertPreTrainedModel):
     config_class = RobertaConfig
@@ -37,7 +39,9 @@ class SimilarityModeling(BertPreTrainedModel):
             pos_margin, neg_margin = 0, 1
 
         self.reducer = reducers.DoNothingReducer()
-        if self.hparams.hard_mine:
+        if self.hparams.use_matching_table:
+            self.miner_func = MultiSimilarityMinerWithMatchingTable()
+        elif self.hparams.hard_mine:
             self.miner_func = miners.MultiSimilarityMiner()
         else:
             self.miner_func = miners.BatchEasyHardMiner(
@@ -46,7 +50,11 @@ class SimilarityModeling(BertPreTrainedModel):
                 distance=CosineSimilarity(),
             )
 
-        if getattr(self.hparams, "metric_loss_func", "ContrastiveLoss") in ["ContrastiveLoss", "CosineLoss"]:
+        if self.hparams.use_matching_table:
+            self.similarity_loss_func = ContrastiveLossWithMatchingTable(
+                pos_margin=pos_margin, neg_margin=neg_margin, distance=self.metric
+            )  # |np-sp|_+ + |sn-mn|_+ so for cossim we do pos_m=1 and neg_m=0
+        elif getattr(self.hparams, "metric_loss_func", "ContrastiveLoss") in ["ContrastiveLoss", "CosineLoss"]:
             self.similarity_loss_func = losses.ContrastiveLoss(
                 pos_margin=pos_margin, neg_margin=neg_margin, distance=self.metric
             )  # |np-sp|_+ + |sn-mn|_+ so for cossim we do pos_m=1 and neg_m=0
@@ -78,6 +86,7 @@ class SimilarityModeling(BertPreTrainedModel):
         return_dict=False,
         run_similarity=False,
         run_mlm=True,
+        matching_table=None,
     ):
         if run_mlm:
             outputs = list(
@@ -131,9 +140,12 @@ class SimilarityModeling(BertPreTrainedModel):
             non_masked_seq_out = non_masked_outputs[0]
 
             meaned_sentences = non_masked_seq_out.mean(1)
-            miner_output = list(self.miner_func(meaned_sentences, sample_labels))
-
-            sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output)
+            if self.matching_table is not None:
+                miner_output = list(self.miner_func(meaned_sentences, sample_labels, matching_table[0]))
+                sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output, matching_table[0])
+            else:
+                miner_output = list(self.miner_func(meaned_sentences, sample_labels))
+                sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output)
             outputs = (masked_lm_loss, sim_loss, torch.zeros(1)) + outputs
         else:
             outputs = (
