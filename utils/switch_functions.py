@@ -1,4 +1,4 @@
-from models.SDR.similarity_modeling import SimilarityModeling
+from models.SDR.similarity_modeling import SimilarityModeling, SimilarityModelingMacBert
 import torch
 import transformers
 from transformers import get_linear_schedule_with_warmup
@@ -67,5 +67,6 @@ from transformers import (
 def choose_model_class_configuration(arch, base_model_name):
     MODEL_CLASSES = {
         "SDR_roberta": (RobertaConfig, SimilarityModeling, RobertaTokenizer),
+        "SDR_macbert": (BertConfig, SimilarityModelingMacBert, BertTokenizer)
     }
     return MODEL_CLASSES[f"{arch}_{base_model_name}"]

@@ -12,6 +12,7 @@ import json
 import csv
 import sys
 from models.reco.recos_utils import index_amp
+from opencc import OpenCC
 
 
 nltk.download("punkt")
@@ -38,6 +39,15 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
         self.block_size = block_size
         self.tokenizer = tokenizer
 
+        if self.hparams.language is 'chinese':
+        	self.t2s = OpenCC('t2s').convert
+        	self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
+        	self.ensure_ascii = False
+        else:
+        	self.t2s = lambda x:x
+        	self.sent_tokenizer = nltk.sent_tokenize
+        	self.ensure_ascii = True
+
         if os.path.exists(cached_features_file) and (self.hparams is None or not self.hparams.overwrite_data_cache):
             print("\nLoading features from cached file %s", cached_features_file)
             with open(cached_features_file, "rb") as handle:
@@ -58,8 +68,8 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                         continue
                     valid_sentences_count = 0
                     title_with_base_title = "{}:{}".format(title, section[0])
-                    for sent_idx, sent in enumerate(nltk.sent_tokenize(section[1][:max_article_len])[:max_sentences]):
-                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(json.dumps(sent[:max_sent_len])))[
+                    for sent_idx, sent in enumerate(self.sent_tokenizer(section[1][:max_article_len])[:max_sentences]):
+                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(self.t2s(json.dumps(sent[:max_sent_len], ensure_ascii=self.ensure_ascii))))[
                             :block_size
                         ]
                         this_sections_sentences.append(
