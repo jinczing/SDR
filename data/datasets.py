@@ -41,14 +41,14 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
         self.tokenizer = tokenizer
 
         if self.hparams.language is 'chinese':
-        	self.t2s = OpenCC('t2s').convert
-        	self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
-        	self.ensure_ascii = False
-        	self.ltp = LTP()
+            self.t2s = OpenCC('t2s').convert
+            self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
+            self.ensure_ascii = False
+            self.ltp = LTP()
         else:
-        	self.t2s = lambda x:x
-        	self.sent_tokenizer = nltk.sent_tokenize
-        	self.ensure_ascii = True
+            self.t2s = lambda x:x
+            self.sent_tokenizer = nltk.sent_tokenize
+            self.ensure_ascii = True
 
         if os.path.exists(cached_features_file) and (self.hparams is None or not self.hparams.overwrite_data_cache):
             print("\nLoading features from cached file %s", cached_features_file)
@@ -71,12 +71,11 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                     valid_sentences_count = 0
                     title_with_base_title = "{}:{}".format(title, section[0])
                     for sent_idx, sent in enumerate(self.sent_tokenizer(section[1][:max_article_len])[:max_sentences]):
-                    	txt = self.t2s(json.dumps(sent[:max_sent_len], ensure_ascii=self.ensure_ascii))
-                    		
-                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(txt))[
-                            :block_size
-                        ]
-
+                        if self.hparams.language == "chinese":
+                            txt = self.t2s(sent[:max_sent_len])[:block_size]
+                        else:
+                            txt = json.dumps(sent[:max_sent_len])[:block_size]
+                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(txt))[:block_size]
                         tup = (
                                 tokenized_desc,
                                 len(tokenized_desc),
@@ -86,16 +85,34 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                                 sent[:max_sent_len],
                             )
 
-                        # separate word for whole word masking
-                    	if self.hparams.base_model_name == 'macbert':
-                    		seg, _ = self.ltp.seg([txt])
-                    		tup = tup + (seg[0], )
-                    	else:
-                    		tup = tup + (None, )
+                        # generate alterative tokens
+                        segs, _ = self.ltp.seg([txt])
+                        segs = segs[0]
+                        syns = []
+                        seg_inds = []
+                        for seg in segs:
+                            s, _ = synonyms.nearby(seg, self.hparams.max_synonyms+1)
+                            s = s[1:]
+                            if len(s) == 0:
+                                s = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(seg))
+                                s = list(map(lambda x: [x]*self.hparams.max_synonyms, s))
+                                syns += s
+                            else:
+                                for i in range(len(s)):
+                                    ss = s[i][:len(seg)]
+                                    if len(ss) < len(seg):
+                                        ss = ss + seg[-(len(seg)-len(ss)):]
+                                    s[i] = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(ss))
+                                syns += np.array(s).transpose((0, 1)).tolist()
 
-                        this_sections_sentences.append(
-                            tup,
-                        )
+                            seg_inds.append(len(seg))
+
+                        # separate word for whole word masking
+                        if self.hparams.base_model_name == 'macbert':
+                            tup = tup + (np.array(syns).transpose((0, 1)), np.array(seg_inds))
+                        else:
+                            tup = tup + (None, None)
+                        this_sections_sentences.append(tup,)
                         self.indices_map.append((idx_article, valid_sections_count, valid_sentences_count))
                         valid_sentences_count += 1
                     this_sample_sections.append((this_sections_sentences, title_with_base_title))
@@ -110,20 +127,22 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
 
         # prepare for ground truth matching table
         if self.hparams.use_matching_table:
-        	inds_table = [int(tup[1]) for tup in self.examples]
-        	path = self.hparams.matching_flie_path
-        	matcing_table = torch.empty(len(self.labels), len(self.labels))
-        	with open(path, 'r') as f:
-        		reader = csv.reader(f)
-        		for i, r in enumerate(reader):
-        			if not i:
-        				continue
-        			l = list(map(int, r))
-        			matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
-        			matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
-        	self.matching_table = matching_table
+            inds_table = [int(tup[1]) for tup in self.examples]
+            path = self.hparams.matching_file_path
+            matching_table = torch.empty(len(self.labels), len(self.labels))
+            with open(path, 'r') as f:
+                reader = csv.reader(f)
+                for i, r in enumerate(reader):
+                    if not i:
+                        continue
+                    l = list(map(int, r))
+                    if l[0] not in inds_table or l[1] not in inds_table:
+                        continue
+                    matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
+                    matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
+            self.matching_table = matching_table
         else:
-        	self.matching_table = None
+            self.matching_table = None
 
     def save_load_splitted_dataset(self, mode, cached_features_file, raw_data_path):
         proccessed_path = f"{cached_features_file}_EXAMPLES"
@@ -157,8 +176,8 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
 
     def download_raw(self, dataset_name):
         raw_data_path = f"data/datasets/{dataset_name}/raw_data"
-        if 'agricultures' in dataset_name:
-        	raw_data_path += '.csv'
+        # if 'agricultures' in dataset_name:
+        # 	raw_data_path += '.csv'
         os.makedirs(os.path.dirname(raw_data_path), exist_ok=True)
         if not os.path.exists(raw_data_path):
             os.system(f"wget -O {raw_data_path} {raw_data_link(dataset_name)}")
@@ -184,7 +203,12 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             item,
             self.labels[item],
             self.matching_table,
-            sent[-1],
+            torch.tensor(sent[-2])[
+                :self.hparams.limit_tokens
+            ], # sents x syns
+            torch.tensor([self.tokenizer.build_inputs_with_special_tokens(i) for i in sent[-1]])[
+                :, :self.hparams.limit_tokens
+            ], # seg_inds
         )
 
 class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphsSentences):

@@ -69,7 +69,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
     task_name = parser.parse_known_args()[0].task_name
 
     DATASET_OPTIONS = {
-        "document_similarity": ["agricultures", "video_games", "wines",],
+        "document_similarity": ["agricultures_public", "video_games", "wines",],
     }
     parser.add_argument(
         "--dataset_name",
@@ -146,6 +146,11 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
     parser.add_argument("--val_batch_size", default=8, type=int)
     parser.add_argument("--test_batch_size", default=1, type=int)
     parser.add_argument("--test_only", type=str2bool, nargs="?", const=True, default=False)
+
+    parser.add_argument("--language", default='chinese', type=str)
+    parser.add_argument("--use_matching_table", action="store_true", default=True)
+    parser.add_argument("--matching_file_path", default=f"./data/datasets/{dataset_name}/matching_table.csv", type=str)
+    parser.add_argument("--max_synonyms", default=5, type=int)
 
     return {
         "dataset_name": dataset_name,

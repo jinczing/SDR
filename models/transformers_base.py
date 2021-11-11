@@ -55,7 +55,7 @@ class TransformersBase(DocEmbeddingTemplate):
             "--mlm_probability", type=float, default=0.15, help="Ratio of tokens to mask for masked language modeling loss",
         )
         parser.add_argument(
-            "--base_model_name", type=str, default="roberta", help="The underliying BERT-like model this arc.",
+            "--base_model_name", type=str, default="macbert", help="The underliying BERT-like model this arc.",
         )
         base_model_name = parser.parse_known_args()[0].base_model_name
         if base_model_name in ["roberta", "tnlr"]:
@@ -85,7 +85,7 @@ class TransformersBase(DocEmbeddingTemplate):
         parser.set_defaults(lr=2e-5, weight_decay=0)
 
         arch, mlm = parser.parse_known_args()[0].arch, parser.parse_known_args()[0].mlm
-        if arch in ["bert", "roberta", "distilbert", "camembert", "recoberta", "recoberta_cosine"] and not mlm:
+        if arch in ["bert", "roberta", "distilbert", "camembert", "recoberta", "recoberta_cosine", "macbert"] and not mlm:
             raise ValueError(
                 "BERT and RoBERTa-like models do not have LM heads but masked LM heads. They must be run using the --mlm "
                 "flag (masked language modeling)."

@@ -1,0 +1,33 @@
+"filename", "language", "Python", "Markdown", "Shell Script", "comment", "blank", "total"
+"d:\projects\SDR\README.md", "Markdown", 0, 82, 0, 0, 24, 106
+"d:\projects\SDR\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\data\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\data\data_utils.py", "Python", 52, 0, 0, 0, 9, 61
+"d:\projects\SDR\data\datasets.py", "Python", 182, 0, 0, 4, 28, 214
+"d:\projects\SDR\instructions\CODE_OF_CONDUCT.md", "Markdown", 0, 6, 0, 0, 4, 10
+"d:\projects\SDR\instructions\SECURITY.md", "Markdown", 0, 22, 0, 2, 17, 41
+"d:\projects\SDR\instructions\SUPPORT.md", "Markdown", 0, 8, 0, 0, 7, 15
+"d:\projects\SDR\instructions\installation.sh", "Shell Script", 0, 0, 5, 1, 2, 8
+"d:\projects\SDR\models\SDR\SDR.py", "Python", 201, 0, 0, 7, 36, 244
+"d:\projects\SDR\models\SDR\SDR_utils.py", "Python", 25, 0, 0, 7, 5, 37
+"d:\projects\SDR\models\SDR\similarity_modeling.py", "Python", 253, 0, 0, 13, 32, 298
+"d:\projects\SDR\models\doc_similarity_pl_template.py", "Python", 124, 0, 0, 46, 39, 209
+"d:\projects\SDR\models\reco\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\models\reco\hierarchical_reco.py", "Python", 51, 0, 0, 0, 12, 63
+"d:\projects\SDR\models\reco\recos_utils.py", "Python", 17, 0, 0, 3, 8, 28
+"d:\projects\SDR\models\reco\wiki_recos_eval\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\models\reco\wiki_recos_eval\eval_metrics.py", "Python", 131, 0, 0, 5, 21, 157
+"d:\projects\SDR\models\transformer_utils.py", "Python", 43, 0, 0, 5, 9, 57
+"d:\projects\SDR\models\transformers_base.py", "Python", 78, 0, 0, 6, 11, 95
+"d:\projects\SDR\sdr_main.py", "Python", 64, 0, 0, 5, 15, 84
+"d:\projects\SDR\utils\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\utils\argparse_init.py", "Python", 117, 0, 0, 15, 28, 160
+"d:\projects\SDR\utils\logging_utils.py", "Python", 11, 0, 0, 5, 5, 21
+"d:\projects\SDR\utils\metrics_utils.py", "Python", 125, 0, 0, 21, 22, 168
+"d:\projects\SDR\utils\model_utils.py", "Python", 16, 0, 0, 0, 6, 22
+"d:\projects\SDR\utils\pytorch_lightning_utils\__init__.py", "Python", 0, 0, 0, 0, 1, 1
+"d:\projects\SDR\utils\pytorch_lightning_utils\callbacks.py", "Python", 7, 0, 0, 0, 4, 11
+"d:\projects\SDR\utils\pytorch_lightning_utils\pytorch_lightning_utils.py", "Python", 85, 0, 0, 7, 21, 113
+"d:\projects\SDR\utils\switch_functions.py", "Python", 39, 0, 0, 21, 15, 75
+"d:\projects\SDR\utils\torch_utils.py", "Python", 19, 0, 0, 1, 5, 25
+"Total", "-", 1640, 118, 5, 174, 391, 2328

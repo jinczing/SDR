@@ -9,16 +9,17 @@ from torch.nn import CrossEntropyLoss
 from torch.nn.functional import gelu
 from pytorch_metric_learning import miners, losses, reducers
 
-from transformers.configuration_roberta import RobertaConfig
+from transformers.models.roberta.configuration_roberta import RobertaConfig
+from transformers.models.bert.configuration_bert import BertConfig
 # from transformers import BertModel, BertLMHeadModel
-from transformers.modeling_bert import BertLayerNorm, BertPreTrainedModel, BertModel, BertLMHeadModel
-from transformers.modeling_roberta import RobertaModel, RobertaLMHead
+from transformers.models.roberta.modeling_roberta import RobertaModel, RobertaLMHead
+from transformers.models.bert.modeling_bert import BertPreTrainedModel, BertModel, BertLMHeadModel
 from pytorch_metric_learning.distances import CosineSimilarity
 
 from utils.metrics_utils import MultiSimilarityMinerWithMatchingTable, ContrastiveLossWithMatchingTable
 
 class SimilarityModelingMacBert(BertPreTrainedModel):
-    config_class = RobertaConfig
+    config_class = BertConfig
     base_model_prefix = "macbert"
 
     def __init__(self, config, hparams):
@@ -141,8 +142,8 @@ class SimilarityModelingMacBert(BertPreTrainedModel):
 
             meaned_sentences = non_masked_seq_out.mean(1)
             if self.matching_table is not None:
-                miner_output = list(self.miner_func(meaned_sentences, sample_labels, matching_table[0]))
-                sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output, matching_table[0])
+                miner_output = list(self.miner_func(meaned_sentences, sample_labels, matching_table=matching_table[0]))
+                sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output)
             else:
                 miner_output = list(self.miner_func(meaned_sentences, sample_labels))
                 sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output)

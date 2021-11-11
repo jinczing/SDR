@@ -4,7 +4,8 @@ from pytorch_metric_learning import miners, losses, reducers
 from pytorch_metric_learning.distances import CosineSimilarity
 from pytorch_metric_learning.utils import common_functions as c_f
 from pytorch_metric_learning.utils import loss_and_miner_utils as lmu
-from pytorch_metric_learning.base_miner import BaseTupleMiner
+from pytorch_metric_learning.miners.base_miner import BaseTupleMiner
+from pytorch_metric_learning.utils import common_functions as c_f
 
 def get_all_pairs_indices(labels, ref_labels=None, matching_table=None):
     """
@@ -59,7 +60,26 @@ class MultiSimilarityMinerWithMatchingTable(miners.MultiSimilarityMiner):
     def __init__(self, epsilon=0.1, **kwargs):
         super().__init__(epsilon, **kwargs)
 
-        self.matching_table = matching_table
+        # self.matching_table = kwargs['matching_table']
+
+    def forward(self, embeddings, labels, ref_emb=None, ref_labels=None, matching_table=None):
+        """
+        Args:
+            embeddings: tensor of size (batch_size, embedding_size)
+            labels: tensor of size (batch_size)
+        Does any necessary preprocessing, then does mining, and then checks the
+        shape of the mining output before returning it
+        """
+        self.reset_stats()
+        with torch.no_grad():
+            c_f.check_shapes(embeddings, labels)
+            labels = c_f.to_device(labels, embeddings)
+            ref_emb, ref_labels = self.set_ref_emb(
+                embeddings, labels, ref_emb, ref_labels
+            )
+            mining_output = self.mine(embeddings, labels, ref_emb, ref_labels, matching_table)
+        self.output_assertion(mining_output)
+        return mining_output
 
     def mine(self, embeddings, labels, ref_emb, ref_labels):
         mat = self.distance(embeddings, ref_emb)

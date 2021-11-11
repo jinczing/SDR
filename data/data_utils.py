@@ -49,7 +49,7 @@ def reco_sentence_collate(examples: List[torch.Tensor], tokenizer):
         [i[7] for i in examples],
         torch.tensor([i[8] for i in examples]),
         [i[9] for i in examples], # matching table
-        [i[10] for i in examples], # word segments
+        pad_sequence([i[10] for i in examples], batch_first=True, padding_value=tokenizer.pad_token_id), # word segments
     )
 
 

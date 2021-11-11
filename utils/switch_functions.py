@@ -59,7 +59,9 @@ def choose_scheduler(scheduler_name, optimizer, warmup_steps, params):
 
 from transformers import (
     RobertaConfig,
+    BertConfig,
     RobertaTokenizer,
+    BertTokenizer,
     get_linear_schedule_with_warmup,
 )
 

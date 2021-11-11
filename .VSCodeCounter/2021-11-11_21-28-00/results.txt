@@ -1,0 +1,65 @@
+Date : 2021-11-11 21:28:00
+Directory : d:\projects\SDR
+Total : 31 files,  1763 codes, 174 comments, 391 blanks, all 2328 lines
+
+Languages
++--------------+------------+------------+------------+------------+------------+
+| language     | files      | code       | comment    | blank      | total      |
++--------------+------------+------------+------------+------------+------------+
+| Python       |         26 |      1,640 |        171 |        337 |      2,148 |
+| Markdown     |          4 |        118 |          2 |         52 |        172 |
+| Shell Script |          1 |          5 |          1 |          2 |          8 |
++--------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                     | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                        |         31 |      1,763 |        174 |        391 |      2,328 |
+| data                                                                     |          3 |        234 |          4 |         38 |        276 |
+| instructions                                                             |          4 |         41 |          3 |         30 |         74 |
+| models                                                                   |         11 |        923 |         92 |        175 |      1,190 |
+| models\SDR                                                               |          3 |        479 |         27 |         73 |        579 |
+| models\reco                                                              |          5 |        199 |          8 |         43 |        250 |
+| models\reco\wiki_recos_eval                                              |          2 |        131 |          5 |         22 |        158 |
+| utils                                                                    |         10 |        419 |         70 |        108 |        597 |
+| utils\pytorch_lightning_utils                                            |          3 |         92 |          7 |         26 |        125 |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| filename                                                                 | language     | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| d:\projects\SDR\README.md                                                | Markdown     |         82 |          0 |         24 |        106 |
+| d:\projects\SDR\__init__.py                                              | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\data\__init__.py                                         | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\data\data_utils.py                                       | Python       |         52 |          0 |          9 |         61 |
+| d:\projects\SDR\data\datasets.py                                         | Python       |        182 |          4 |         28 |        214 |
+| d:\projects\SDR\instructions\CODE_OF_CONDUCT.md                          | Markdown     |          6 |          0 |          4 |         10 |
+| d:\projects\SDR\instructions\SECURITY.md                                 | Markdown     |         22 |          2 |         17 |         41 |
+| d:\projects\SDR\instructions\SUPPORT.md                                  | Markdown     |          8 |          0 |          7 |         15 |
+| d:\projects\SDR\instructions\installation.sh                             | Shell Script |          5 |          1 |          2 |          8 |
+| d:\projects\SDR\models\SDR\SDR.py                                        | Python       |        201 |          7 |         36 |        244 |
+| d:\projects\SDR\models\SDR\SDR_utils.py                                  | Python       |         25 |          7 |          5 |         37 |
+| d:\projects\SDR\models\SDR\similarity_modeling.py                        | Python       |        253 |         13 |         32 |        298 |
+| d:\projects\SDR\models\doc_similarity_pl_template.py                     | Python       |        124 |         46 |         39 |        209 |
+| d:\projects\SDR\models\reco\__init__.py                                  | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\models\reco\hierarchical_reco.py                         | Python       |         51 |          0 |         12 |         63 |
+| d:\projects\SDR\models\reco\recos_utils.py                               | Python       |         17 |          3 |          8 |         28 |
+| d:\projects\SDR\models\reco\wiki_recos_eval\__init__.py                  | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\models\reco\wiki_recos_eval\eval_metrics.py              | Python       |        131 |          5 |         21 |        157 |
+| d:\projects\SDR\models\transformer_utils.py                              | Python       |         43 |          5 |          9 |         57 |
+| d:\projects\SDR\models\transformers_base.py                              | Python       |         78 |          6 |         11 |         95 |
+| d:\projects\SDR\sdr_main.py                                              | Python       |         64 |          5 |         15 |         84 |
+| d:\projects\SDR\utils\__init__.py                                        | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\utils\argparse_init.py                                   | Python       |        117 |         15 |         28 |        160 |
+| d:\projects\SDR\utils\logging_utils.py                                   | Python       |         11 |          5 |          5 |         21 |
+| d:\projects\SDR\utils\metrics_utils.py                                   | Python       |        125 |         21 |         22 |        168 |
+| d:\projects\SDR\utils\model_utils.py                                     | Python       |         16 |          0 |          6 |         22 |
+| d:\projects\SDR\utils\pytorch_lightning_utils\__init__.py                | Python       |          0 |          0 |          1 |          1 |
+| d:\projects\SDR\utils\pytorch_lightning_utils\callbacks.py               | Python       |          7 |          0 |          4 |         11 |
+| d:\projects\SDR\utils\pytorch_lightning_utils\pytorch_lightning_utils.py | Python       |         85 |          7 |         21 |        113 |
+| d:\projects\SDR\utils\switch_functions.py                                | Python       |         39 |         21 |         15 |         75 |
+| d:\projects\SDR\utils\torch_utils.py                                     | Python       |         19 |          1 |          5 |         25 |
+| Total                                                                    |              |      1,763 |        174 |        391 |      2,328 |
++--------------------------------------------------------------------------+--------------+------------+------------+------------+------------+

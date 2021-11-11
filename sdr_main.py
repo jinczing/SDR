@@ -45,15 +45,17 @@ def main_train(model_class_pointer, hparams,parser):
     trainer = pytorch_lightning.Trainer(
         num_sanity_val_steps=2,
         gradient_clip_val=hparams.max_grad_norm,
-        callbacks=[RunValidationOnStart()],
-        checkpoint_callback=ModelCheckpoint(
+        checkpoint_callback=True,
+        callbacks=[RunValidationOnStart(), ModelCheckpoint(
             save_top_k=3,
             save_last=True,
             mode="min" if "acc" not in hparams.metric_to_track else "max",
             monitor=hparams.metric_to_track,
-            filepath=os.path.join(model.hparams.hparams_dir, "{epoch}"),
+            # filepath=os.path.join(model.hparams.hparams_dir, "{epoch}"),
+            dirpath=os.path.join(model.hparams.hparams_dir),
+            filename="{epoch}",
             verbose=True,
-        ),
+        )],
         logger=logger,
         max_epochs=hparams.max_epochs,
         gpus=hparams.gpus,
