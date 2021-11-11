@@ -157,6 +157,8 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
 
     def download_raw(self, dataset_name):
         raw_data_path = f"data/datasets/{dataset_name}/raw_data"
+        if 'agricultures' in dataset_name:
+        	raw_data_path += '.csv'
         os.makedirs(os.path.dirname(raw_data_path), exist_ok=True)
         if not os.path.exists(raw_data_path):
             os.system(f"wget -O {raw_data_path} {raw_data_link(dataset_name)}")

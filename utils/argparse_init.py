@@ -69,7 +69,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
     task_name = parser.parse_known_args()[0].task_name
 
     DATASET_OPTIONS = {
-        "document_similarity": ["video_games", "wines",],
+        "document_similarity": ["agricultures", "video_games", "wines",],
     }
     parser.add_argument(
         "--dataset_name",
