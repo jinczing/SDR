@@ -20,7 +20,6 @@ from pytorch_metric_learning.samplers import MPerClassSampler
 from torch.utils.data.dataloader import DataLoader
 import json
 
-
 class SDR(TransformersBase):
 
     """
@@ -37,16 +36,17 @@ class SDR(TransformersBase):
 
 
     def forward_train(self, batch):
-        inputs, labels = transformer_utils.mask_tokens(batch[0].clone().detach(), self.tokenizer, self.hparams)
+        inputs, labels = transformer_utils.mask_tokens(batch[0].clone().detach(), self.tokenizer, self.hparams, batch[-1])
 
         outputs = self.model(
             inputs,
             masked_lm_labels=labels,
             non_masked_input_ids=batch[0],
-            sample_labels=batch[-2],
+            sample_labels=batch[-3],
             run_similarity=True,
             run_mlm=True,
-            matching_table=batch[-1],
+            matching_table=batch[-2],
+            # seg_words=batch[-1],
         )
 
         self.losses["mlm_loss"] = outputs[0]

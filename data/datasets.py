@@ -13,6 +13,7 @@ import csv
 import sys
 from models.reco.recos_utils import index_amp
 from opencc import OpenCC
+from ltp import LTP
 
 
 nltk.download("punkt")
@@ -43,6 +44,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
         	self.t2s = OpenCC('t2s').convert
         	self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
         	self.ensure_ascii = False
+        	self.ltp = LTP()
         else:
         	self.t2s = lambda x:x
         	self.sent_tokenizer = nltk.sent_tokenize
@@ -69,18 +71,30 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                     valid_sentences_count = 0
                     title_with_base_title = "{}:{}".format(title, section[0])
                     for sent_idx, sent in enumerate(self.sent_tokenizer(section[1][:max_article_len])[:max_sentences]):
-                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(self.t2s(json.dumps(sent[:max_sent_len], ensure_ascii=self.ensure_ascii))))[
+                    	txt = self.t2s(json.dumps(sent[:max_sent_len], ensure_ascii=self.ensure_ascii))
+                    		
+                        tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(txt))[
                             :block_size
                         ]
-                        this_sections_sentences.append(
-                            (
+
+                        tup = (
                                 tokenized_desc,
                                 len(tokenized_desc),
                                 idx_article,
                                 valid_sections_count,
                                 valid_sentences_count,
                                 sent[:max_sent_len],
-                            ),
+                            )
+
+                        # separate word for whole word masking
+                    	if self.hparams.base_model_name == 'macbert':
+                    		seg, _ = self.ltp.seg([txt])
+                    		tup = tup + (seg[0], )
+                    	else:
+                    		tup = tup + (None, )
+
+                        this_sections_sentences.append(
+                            tup,
                         )
                         self.indices_map.append((idx_article, valid_sections_count, valid_sentences_count))
                         valid_sentences_count += 1
@@ -168,6 +182,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             item,
             self.labels[item],
             self.matching_table,
+            sent[-1],
         )
 
 class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphsSentences):
