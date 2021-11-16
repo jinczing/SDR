@@ -31,8 +31,8 @@ def reco_sentence_test_collate(examples: List[torch.Tensor], tokenizer):
                     [i[7] for i in section],
                     torch.tensor([i[8] for i in section]),
                     [i[9] for i in section],
-                    [i[10] for i in section],
-                    pad_sequence([i[11] for i in examples], batch_first=True, padding_value=tokenizer.pad_token_id), # synonyms
+                    # [i[10] for i in section],
+                    # pad_sequence([i[11] for i in examples], batch_first=True, padding_value=tokenizer.pad_token_id), # synonyms
                 )
             )
         examples_.append(sections)
@@ -50,8 +50,8 @@ def reco_sentence_collate(examples: List[torch.Tensor], tokenizer):
         [i[7] for i in examples],
         torch.tensor([i[8] for i in examples]),
         [i[9] for i in examples], # matching table
-        [i[10] for i in examples], # segs len
-        pad_sequence([i[11] for i in examples], batch_first=True, padding_value=tokenizer.pad_token_id), # synonyms
+        # [i[10] for i in examples], # segs len
+        # pad_sequence([i[11] for i in examples], batch_first=True, padding_value=tokenizer.pad_token_id), # synonyms
     )
 
 

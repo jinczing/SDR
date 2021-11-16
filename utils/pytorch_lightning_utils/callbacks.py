@@ -6,5 +6,5 @@ class RunValidationOnStart(Callback):
     def __init__(self):
         pass
 
-    def on_train_start(self, trainer: Trainer, pl_module):
-        return trainer.run_evaluation()
+    # def on_train_start(self, trainer: Trainer, pl_module):
+    #     return trainer.test()

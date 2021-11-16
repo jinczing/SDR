@@ -143,7 +143,7 @@ class SimilarityModelingMacBert(BertPreTrainedModel):
             non_masked_seq_out = non_masked_outputs[0]
 
             meaned_sentences = non_masked_seq_out.mean(1)
-            if self.matching_table is not None:
+            if matching_table is not None:
                 miner_output = list(self.miner_func(meaned_sentences, sample_labels, matching_table=matching_table[0]))
                 sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output)
             else:
@@ -282,7 +282,7 @@ class SimilarityModeling(BertPreTrainedModel):
             non_masked_seq_out = non_masked_outputs[0]
 
             meaned_sentences = non_masked_seq_out.mean(1)
-            if self.matching_table is not None:
+            if matching_table is not None:
                 miner_output = list(self.miner_func(meaned_sentences, sample_labels, matching_table[0]))
                 sim_loss = self.similarity_loss_func(meaned_sentences, sample_labels, miner_output, matching_table[0])
             else:

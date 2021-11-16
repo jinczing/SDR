@@ -77,6 +77,8 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                         else:
                             txt = json.dumps(sent[:max_sent_len])[:block_size]
                         tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(txt))[:block_size]
+                        print(txt)
+                        print(tokenized_desc)
                         tup = (
                                 tokenized_desc,
                                 len(tokenized_desc),
@@ -87,32 +89,34 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                             )
 
                         # generate alterative synonyms tokens
-                        segs, _ = self.ltp.seg([txt])
-                        segs = segs[0]
-                        syns = []
-                        seg_inds = []
-                        for seg in segs:
-                            s, _ = synonyms.nearby(seg, self.hparams.max_synonyms+1)
-                            s = s[1:]
-                            if len(s) == 0:
-                                s = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(seg))
-                                s = list(map(lambda x: [x]*self.hparams.max_synonyms, s))
-                                syns += s
-                            else:
-                                for i in range(len(s)):
-                                    ss = s[i][:len(seg)]
-                                    if len(ss) < len(seg):
-                                        ss = ss + seg[-(len(seg)-len(ss)):]
-                                    s[i] = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(ss))
-                                syns += np.array(s).transpose((0, 1)).tolist()
+                        # segs, _ = self.ltp.seg([txt])
+                        # segs = segs[0]
+                        # syns = []
+                        # seg_inds = []
+                        # for seg in segs:
+                        #     s, _ = synonyms.nearby(seg, self.hparams.max_synonyms+1)
+                        #     s = s[1:]
+                        #     if len(s) == 0 or seg.isalnum():
+                        #         s = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(seg))
+                        #         s = list(map(lambda x: [x]*self.hparams.max_synonyms, s))
+                        #         syns += s
+                        #     else:
+                        #         for i in range(len(s)):
+                        #             ss = s[i][:len(seg)]
+                        #             if len(ss) < len(seg):
+                        #                 ss = ss + seg[-(len(seg)-len(ss)):]
+                        #             if ss.isalnum():
+                        #                 ss = seg
+                        #             s[i] = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(ss))
+                        #         syns += np.array(s).transpose((1, 0)).tolist()
 
-                            seg_inds.append(len(seg))
+                        #     seg_inds.append(len(seg))
 
                         # separate word for whole word masking
                         if self.hparams.base_model_name == 'macbert':
-                            tup = tup + (np.array(syns).transpose((0, 1)), np.array(seg_inds))
+                            tup = tup # + (None, None) # + (np.array(syns).transpose((1, 0)), np.array(seg_inds))
                         else:
-                            tup = tup + (None, None)
+                            tup = tup # + (None, None)
                         this_sections_sentences.append(tup,)
                         self.indices_map.append((idx_article, valid_sections_count, valid_sentences_count))
                         valid_sentences_count += 1
@@ -129,8 +133,9 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
         # prepare for ground truth matching table
         if self.hparams.use_matching_table:
             inds_table = [int(tup[1]) for tup in self.examples]
+            # print(inds_table)
             path = self.hparams.matching_file_path
-            matching_table = torch.empty(len(self.labels), len(self.labels))
+            matching_table = torch.zeros(len(self.examples), len(self.examples)).bool()
             with open(path, 'r') as f:
                 reader = csv.reader(f)
                 for i, r in enumerate(reader):
@@ -139,6 +144,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                     l = list(map(int, r))
                     if l[0] not in inds_table or l[1] not in inds_table:
                         continue
+                    # print(l[0], l[1], inds_table.index(l[0]), inds_table.index(l[1]))
                     matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
                     matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
             self.matching_table = matching_table
@@ -190,7 +196,6 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
     def __getitem__(self, item):
         idx_article, idx_section, idx_sentence = self.indices_map[item]
         sent = self.examples[idx_article][0][idx_section][0][idx_sentence]
-        print(sent[-1].shape, sent[-2].shape)
         return (
             torch.tensor(self.tokenizer.build_inputs_with_special_tokens(sent[0]), dtype=torch.long,)[
                 : self.hparams.limit_tokens
@@ -204,12 +209,10 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             item,
             self.labels[item],
             self.matching_table, # 9
-            torch.tensor(sent[-1])[
-                : self.hparams.limit_tokens
-            ], # segs, 10
-            torch.tensor([self.tokenizer.build_inputs_with_special_tokens(i) for i in sent[-2]])[
-                :, : self.hparams.limit_tokens
-            ], # syns x words, 11
+            # torch.tensor(sent[-1]) # segs, 10
+            # torch.tensor([self.tokenizer.build_inputs_with_special_tokens(i) for i in sent[-2]])[
+            #     :, : self.hparams.limit_tokens
+            # ].permute(1, 0), # words x syns, 11
         )
 
 class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphsSentences):

@@ -17,15 +17,21 @@ def get_all_pairs_indices(labels, ref_labels=None, matching_table=None):
         ref_labels = labels
     labels1 = labels.unsqueeze(1)
     labels2 = ref_labels.unsqueeze(0)
-    if matching_table is not None:
-    	matches = (labels1 == labels2).byte()
+    if matching_table is None:
+        matches = (labels1 == labels2).byte()
     else:
-    	t1, t2 = torch.meshgrid(labels1.squeeze(), labels2.squeeze())
-    	inds = torch.cat([t1.unsqueeze(-1), t2.unsqueeze(-1)], dim=-1).view(-1, 2)
-    	inds = inds[:, 0]*matching_table.size(0) + inds[:, 1]
-    	matching_table = matching_table.flatten()
-    	matches = matching_table[inds].byte()
-    	matches = matches.view(labels.size(0), labels.size(0))
+        # print(matching_table.shape)
+        t1, t2 = torch.meshgrid(labels1.squeeze(), labels2.squeeze())
+        inds = torch.cat([t1.unsqueeze(-1), t2.unsqueeze(-1)], dim=-1).view(-1, 2)
+        inds = inds[:, 0]*matching_table.size(0) + inds[:, 1]
+        matching_table = matching_table.flatten()
+        matches = matching_table[inds].byte()
+        # print(matches.sum())
+        matches = matches.view(labels.size(0), labels.size(0))
+        labels1 = labels.unsqueeze(1)
+        labels2 = ref_labels.unsqueeze(0)
+        matches = (matches.bool() | (labels1 == labels2)).byte()
+        # print(matches)
     diffs = matches ^ 1
     if ref_labels is labels:
         matches.fill_diagonal_(0)
@@ -81,7 +87,7 @@ class MultiSimilarityMinerWithMatchingTable(miners.MultiSimilarityMiner):
         self.output_assertion(mining_output)
         return mining_output
 
-    def mine(self, embeddings, labels, ref_emb, ref_labels):
+    def mine(self, embeddings, labels, ref_emb, ref_labels, matching_table):
         mat = self.distance(embeddings, ref_emb)
         a1, p, a2, n = get_all_pairs_indices(labels, ref_labels, matching_table)
 
