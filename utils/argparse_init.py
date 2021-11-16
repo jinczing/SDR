@@ -82,7 +82,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
 
     ## General learning parameters
     parser.add_argument(
-        "--train_batch_size", default={"document_similarity": 8}[task_name], type=int, help="Number of samples in batch",
+        "--train_batch_size", default={"document_similarity": 32}[task_name], type=int, help="Number of samples in batch",
     )
     parser.add_argument(
         "--max_epochs", default={"document_similarity": 50}[task_name], type=int, help="Number of epochs to train",
@@ -120,7 +120,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
 
     ### Auxiliary parameters
     parser.add_argument("--gpus", default=1, type=str, help="gpu count")
-    parser.add_argument("--num_data_workers", default=0, type=int, help="for parallel data load")
+    parser.add_argument("--num_data_workers", default=8, type=int, help="for parallel data load")
     parser.add_argument("--overwrite_data_cache", type=str2bool, nargs="?", const=True, default=False)
 
     parser.add_argument("--train_val_ratio", default=0.90, type=float, help="The split ratio of the data")

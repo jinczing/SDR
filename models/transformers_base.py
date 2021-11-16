@@ -66,7 +66,7 @@ class TransformersBase(DocEmbeddingTemplate):
             default_config, default_tokenizer = "allenai/longformer-base-4096", "allenai/longformer-base-4096"
             parser.set_defaults(batch_size=2)
         elif base_model_name == "macbert":
-            default_config, default_tokenizer = "hfl/chinese-macbert-large", "hfl/chinese-macbert-large"
+            default_config, default_tokenizer = "hfl/chinese-macbert-base", "hfl/chinese-macbert-base"
         parser.add_argument(
             "--config_name",
             type=str,
