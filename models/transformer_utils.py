@@ -5,9 +5,10 @@ import synonyms
 import random
 import time
 
-def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args, synonyms=None, seg_inds=None) -> Tuple[torch.Tensor, torch.Tensor]:
+def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args, synonyms=None, seg_lens=None) -> Tuple[torch.Tensor, torch.Tensor]:
     """ Prepare masked tokens inputs/labels for masked language modeling: 80% MASK, 10% random, 10% original. """
     device = inputs.device
+    print('mask_tokens', synonyms.shape, seg_lens.shape)
 
     if tokenizer.mask_token is None:
         raise ValueError(
@@ -37,10 +38,10 @@ def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args, syno
         timer = time.time()
         # inputs: bxs
         # synonyms: bx5xs
-        # seg_inds: bx[seg]
+        # seg_lens: bx[seg]
         for b in range(labels.size(0)):
             prev = 1
-            for seg in seg_inds[b]:
+            for seg in seg_lens[b]:
                 random_synonyms[b, prev:prev+seg] = random_synonyms[b, prev]
                 prev = prev+seg
         synonyms = torch.cat([synonyms, labels.unsqueeze(1)], dim=1) # bx6xs

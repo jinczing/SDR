@@ -14,6 +14,7 @@ import sys
 from models.reco.recos_utils import index_amp
 from opencc import OpenCC
 from ltp import LTP
+import synonyms
 
 
 nltk.download("punkt")
@@ -85,7 +86,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                                 sent[:max_sent_len],
                             )
 
-                        # generate alterative tokens
+                        # generate alterative synonyms tokens
                         segs, _ = self.ltp.seg([txt])
                         segs = segs[0]
                         syns = []
@@ -189,7 +190,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
     def __getitem__(self, item):
         idx_article, idx_section, idx_sentence = self.indices_map[item]
         sent = self.examples[idx_article][0][idx_section][0][idx_sentence]
-
+        print(sent[-1].shape, sent[-2].shape)
         return (
             torch.tensor(self.tokenizer.build_inputs_with_special_tokens(sent[0]), dtype=torch.long,)[
                 : self.hparams.limit_tokens
@@ -202,13 +203,13 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             idx_sentence,
             item,
             self.labels[item],
-            self.matching_table,
-            torch.tensor(sent[-2])[
-                :self.hparams.limit_tokens
-            ], # sents x syns
-            torch.tensor([self.tokenizer.build_inputs_with_special_tokens(i) for i in sent[-1]])[
-                :, :self.hparams.limit_tokens
-            ], # seg_inds
+            self.matching_table, # 9
+            torch.tensor(sent[-1])[
+                : self.hparams.limit_tokens
+            ], # segs, 10
+            torch.tensor([self.tokenizer.build_inputs_with_special_tokens(i) for i in sent[-2]])[
+                :, : self.hparams.limit_tokens
+            ], # syns x words, 11
         )
 
 class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphsSentences):

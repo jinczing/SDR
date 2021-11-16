@@ -88,6 +88,8 @@ class SimilarityModelingMacBert(BertPreTrainedModel):
         run_similarity=False,
         run_mlm=True,
         matching_table=None,
+        synonyms=None,
+        seg_lens=None,
     ):
         if run_mlm:
             outputs = list(

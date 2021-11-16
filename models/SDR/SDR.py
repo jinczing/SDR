@@ -36,7 +36,7 @@ class SDR(TransformersBase):
 
 
     def forward_train(self, batch):
-        inputs, labels = transformer_utils.mask_tokens(batch[0].clone().detach(), self.tokenizer, self.hparams, batch[-1])
+        inputs, labels = transformer_utils.mask_tokens(batch[0].clone().detach(), self.tokenizer, self.hparams, batch[-1], batch[-2])
 
         outputs = self.model(
             inputs,
@@ -45,8 +45,7 @@ class SDR(TransformersBase):
             sample_labels=batch[-3],
             run_similarity=True,
             run_mlm=True,
-            matching_table=batch[-2],
-            # seg_words=batch[-1],
+            matching_table=batch[-3],
         )
 
         self.losses["mlm_loss"] = outputs[0]
