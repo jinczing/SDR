@@ -157,9 +157,12 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             all_articles = self.read_all_articles(raw_data_path)
             indices = list(range(len(all_articles)))
             if mode != "test":
+                state = np.random.get_state() # ensure disjoint indices between train and val set
+                np.random.seed(9487)
                 train_indices = sorted(
                     np.random.choice(indices, replace=False, size=int(len(all_articles) * self.hparams.train_val_ratio))
                 )
+                np.random.set_state(state)
                 val_indices = np.setdiff1d(list(range(len(all_articles))), train_indices)
                 indices = train_indices if mode == "train" else val_indices
 

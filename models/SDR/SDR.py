@@ -65,7 +65,7 @@ class SDR(TransformersBase):
             sentences=[]
             sentences_embed_per_token = [
                 self.model(
-                    sentence.unsqueeze(0), masked_lm_labels=None, run_similarity=False
+                    sentence.unsqueeze(0), masked_lm_labels=None, run_similarity=False, matching_table=batch[-1],
                 )[5].squeeze(0)
                 for sentence in section[0][:8]
             ]

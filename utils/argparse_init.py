@@ -141,7 +141,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
 
     parser.add_argument("--resume_from_checkpoint", default=None, type=str, help="Path to reload pretrained weights")
     parser.add_argument(
-        "--metric_to_track", default='val_loss', help="which parameter to track on saving",
+        "--metric_to_track", default='val_tot_loss_epoch', help="which parameter to track on saving",
     )
     parser.add_argument("--val_batch_size", default=4, type=int)
     parser.add_argument("--test_batch_size", default=1, type=int)
