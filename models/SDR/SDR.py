@@ -126,14 +126,15 @@ class SDR(TransformersBase):
                 gt_path=gt_path,
                 output_path=self.trainer.checkpoint_callback.last_model_path,
             )
-            metrics = {
-                "mrr": float(metrics["mrr"]),
-                "mpr": float(metrics["mpr"]),
-                **{f"hit_rate_{rate[0]}": float(rate[1]) for rate in metrics["hit_rates"]},
-            }
-            print(json.dumps(metrics, indent=2))
-            for k, v in metrics.items():
-                self.logger.experiment.add_scalar(k, v, global_step=self.global_step)
+            if metrics is not None:
+                metrics = {
+                    "mrr": float(metrics["mrr"]),
+                    "mpr": float(metrics["mpr"]),
+                    **{f"hit_rate_{rate[0]}": float(rate[1]) for rate in metrics["hit_rates"]},
+                }
+                print(json.dumps(metrics, indent=2))
+                for k, v in metrics.items():
+                    self.logger.experiment.add_scalar(k, v, global_step=self.global_step)
 
             recos_path = os.path.join(
                 os.path.dirname(self.trainer.checkpoint_callback.last_model_path),
@@ -235,7 +236,7 @@ class SDR(TransformersBase):
         self.test_dataset = WikipediaTextDatasetParagraphsSentencesTest(
             tokenizer=self.tokenizer,
             hparams=self.hparams,
-            dataset_name=self.hparams.dataset_name,
+            dataset_name=self.hparams.test_dataset_name,
             block_size=block_size,
             mode="test",
         )

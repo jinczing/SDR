@@ -56,7 +56,10 @@ def vectorize_reco_hierarchical(all_features, titles,gt_path, output_path=""):
         recos.append((i, to_numpy(par_score.argsort(descending=True)[1:])))
 
     examples = [[None, title] for title in titles]  # reco_utils compatibale
-    _, mpr, _, mrr, _, hit_rate = evaluate_wiki_recos(recos, output_path, gt_path, examples=examples)
-    metrics = {"mrr": mrr, "mpr": mpr, "hit_rates": hit_rate}
+    if os.path.exists(gt_path):
+        _, mpr, _, mrr, _, hit_rate = evaluate_wiki_recos(recos, output_path, gt_path, examples=examples)
+        metrics = {"mrr": mrr, "mpr": mpr, "hit_rates": hit_rate}
+    else:
+        metrics = None
     return recos, metrics
 
