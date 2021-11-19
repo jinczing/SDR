@@ -47,7 +47,7 @@ def main_train(model_class_pointer, hparams,parser):
         gradient_clip_val=hparams.max_grad_norm,
         checkpoint_callback=True,
         callbacks=[RunValidationOnStart(), ModelCheckpoint(
-            save_top_k=3,
+            save_top_k=-1,
             save_last=True,
             mode="min" if "acc" not in hparams.metric_to_track else "max",
             monitor=hparams.metric_to_track,

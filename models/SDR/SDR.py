@@ -202,7 +202,7 @@ class SDR(TransformersBase):
             check_val_every_n_epoch=1,
             batch_size=32,
             accumulate_grad_batches=2,
-            metric_to_track="train_mlm_loss_epoch",
+            metric_to_track="val_tot_loss_epoch",
         )
 
         return parser
