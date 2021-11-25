@@ -48,7 +48,7 @@ def main_train(model_class_pointer, hparams,parser):
         checkpoint_callback=True,
         callbacks=[RunValidationOnStart(), ModelCheckpoint(
             save_top_k=-1,
-            save_last=True,
+            save_last=False,
             mode="min" if "acc" not in hparams.metric_to_track else "max",
             monitor=hparams.metric_to_track,
             # filepath=os.path.join(model.hparams.hparams_dir, "{epoch}"),

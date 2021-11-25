@@ -46,7 +46,7 @@ class SDR(TransformersBase):
             run_mlm=True,
             matching_table=batch[-1],
         )
-        print(outputs[5].shape)
+        # print('forward_train outputs[5].shape', outputs[5].shape)
 
         self.losses["mlm_loss"] = outputs[0]
         self.losses["d2v_loss"] = (outputs[1] or 0)  * self.hparams.sim_loss_lambda # If no similarity loss we ignore
@@ -65,20 +65,22 @@ class SDR(TransformersBase):
             sentences=[]
             sentences_embed_per_token = [
                 self.model(
-                    sentence[:512].unsqueeze(0), masked_lm_labels=None, run_similarity=False, matching_table=None,
+                    sentence[:512].unsqueeze(0), run_mlm=True, masked_lm_labels=None, run_similarity=False, matching_table=None,
                 )[5].squeeze(0)
                 for sentence in section[0][:8]
             ]
-            print(sentences_embed_per_token[0].shape)
             for idx, sentence in enumerate(sentences_embed_per_token):
                 
                 sentences.append(sentence[: section[2][idx]].mean(0))  # We take the non-padded tokens and mean them
-                print(sentence[: section[2][idx]].mean(0).shape)
-                print(sentences[idx].shape)
             section_out.append(torch.stack(sentences))
-        print('p 1', section_out.shape)
-        print('p 2', section_out.shape)
+        # print('p 1', len(section_out), section_out[0].shape)
+        # print('p 2', batch[0][0][1][0])
         return (section_out, batch[0][0][1][0])  # title name
+
+    
+    def test_step_end(self, output_results):
+        all_test_step_outs = output_results
+        return output_results
 
     def forward(self, batch):
         eval(f"self.forward_{self.hparams.mode}")(batch)
@@ -88,8 +90,6 @@ class SDR(TransformersBase):
         outputs=None, input_ids=None, labels=None, is_train=True, batch_idx=0,
     ):
         mode = "train" if is_train else "val"
-        print(outputs[0].shape)
-        print(outputs[1].shape)
 
         trackes = {}
         lm_pred = np.argmax(outputs[3].cpu().detach().numpy(), axis=2)
@@ -105,6 +105,10 @@ class SDR(TransformersBase):
         return trackes
 
     def test_epoch_end(self, outputs, recos_path=None):
+
+        # print('a 1', len(outputs[0]), len(outputs[0][0]), outputs[0][0][0].shape, outputs[0][0][1].shape, outputs[0][0][2].shape)
+        # print('a 11', len(outputs[0]), len(outputs[0][-1]), outputs[0][-1])
+        # print('a 2', len(outputs[1]), len(outputs[1][0]), outputs[1][0])
 
         if self.trainer.checkpoint_callback.last_model_path == "" and self.hparams.resume_from_checkpoint is None:
             self.trainer.checkpoint_callback.last_model_path = f"{self.hparams.hparams_dir}/no_train"
@@ -130,10 +134,10 @@ class SDR(TransformersBase):
             )
             idxs = idxs[: self.hparams.test_sample_size]
 
-            print(len(section_sentences_features))
-            print(len(section_sentences_features[0]))
-            print(section_sentences_features[0][0])
-            print(len(titles))
+            # print(len(section_sentences_features))
+            # print(len(section_sentences_features[0]))
+            # print(section_sentences_features[0][0])
+            # print(len(titles))
             recos, metrics = vectorize_reco_hierarchical(
                 all_features=section_sentences_features,
                 titles=titles,

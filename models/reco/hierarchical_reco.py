@@ -58,7 +58,7 @@ def vectorize_reco_hierarchical(all_features, titles, gt_path, output_path=""):
         par_score_mat = score_per_article_padded.max(-1)[0]
         par_score = mean_non_pad_value(par_score_mat, axis=-1, pad_value=float("-Inf"))
 
-        recos.append((i, to_numpy(par_score.argsort(descending=True)[1:])))
+        recos.append((titles[i], i, to_numpy(par_score.argsort(descending=True)[1:]), to_numpy(par_score.sort(descending=True)[0][1:])))
 
     examples = [[None, title] for title in titles]  # reco_utils compatibale
     if os.path.exists(gt_path):

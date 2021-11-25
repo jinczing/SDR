@@ -67,6 +67,9 @@ class TransformersBase(DocEmbeddingTemplate):
             parser.set_defaults(batch_size=2)
         elif base_model_name == "macbert":
             default_config, default_tokenizer = "hfl/chinese-macbert-base", "hfl/chinese-macbert-base"
+        elif base_model_name == 'macbert-large':
+            default_config, default_tokenizer = "hfl/chinese-macbert-large", "hfl/chinese-macbert-large"
+            base_model_name = 'macbert'
         parser.add_argument(
             "--config_name",
             type=str,
