@@ -1,7 +1,7 @@
 from typing import Tuple
 import torch
 from transformers import PreTrainedTokenizer
-import synonyms
+# import synonyms
 import random
 import time
 

@@ -86,7 +86,7 @@ class SimilarityModelingMacBert(BertPreTrainedModel):
         output_hidden_states=False,
         return_dict=False,
         run_similarity=False,
-        run_mlm=True,
+        run_mlm=False,
         matching_table=None,
         synonyms=None,
         seg_lens=None,

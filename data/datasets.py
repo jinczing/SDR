@@ -14,7 +14,7 @@ import sys
 from models.reco.recos_utils import index_amp
 from opencc import OpenCC
 from ltp import LTP
-import synonyms
+# import synonyms
 
 
 nltk.download("punkt")
@@ -247,3 +247,9 @@ class WikipediaTextDatasetParagraphsSentencesTest(WikipediaTextDatasetParagraphs
             sections.append(sentences)
         return sections
 
+# tokenized_desc,
+# len(tokenized_desc),
+# idx_article,
+# valid_sections_count,
+# valid_sentences_count,
+# sent[:max_sent_len],
