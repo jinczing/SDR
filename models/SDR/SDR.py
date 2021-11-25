@@ -3,7 +3,7 @@ from data.datasets import (
     WikipediaTextDatasetParagraphsSentencesTest,
 )
 from utils.argparse_init import str2bool
-from models.SDR.SDR_utils import MPerClassSamplerDeter
+from models.SDR.SDR_utils import MPerClassSamplerDeter, MPerClassSamplerTrain
 from data.data_utils import get_gt_seeds_titles, reco_sentence_collate, reco_sentence_test_collate
 from functools import partial
 import os
@@ -167,11 +167,12 @@ class SDR(TransformersBase):
 
     def dataloader(self, mode=None):
         if mode == "train":
-            sampler = MPerClassSampler(
+            sampler = MPerClassSamplerTrain(
                 self.train_dataset.labels,
                 2,
                 batch_size=self.hparams.train_batch_size,
                 length_before_new_iter=(self.hparams.limit_train_batches) * self.hparams.train_batch_size,
+                matching_table=self.train_dataset.matching_table,
             )
 
             loader = DataLoader(
@@ -188,6 +189,7 @@ class SDR(TransformersBase):
                 2,
                 length_before_new_iter=self.hparams.limit_val_indices_batches,
                 batch_size=self.hparams.val_batch_size,
+                matching_table=self.val_dataset.matching_table,
             )
 
             loader = DataLoader(

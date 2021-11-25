@@ -31,7 +31,7 @@ def get_all_pairs_indices(labels, ref_labels=None, matching_table=None):
         labels1 = labels.unsqueeze(1)
         labels2 = ref_labels.unsqueeze(0)
         matches = (matches.bool() | (labels1 == labels2)).byte()
-        # print(matches)
+        print(matches)
     diffs = matches ^ 1
     if ref_labels is labels:
         matches.fill_diagonal_(0)
