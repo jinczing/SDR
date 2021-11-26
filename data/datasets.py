@@ -1,6 +1,6 @@
 import ast
 from data.data_utils import get_gt_seeds_titles, raw_data_link
-import nltk
+# import nltk
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizer
 import os
@@ -13,11 +13,11 @@ import csv
 import sys
 from models.reco.recos_utils import index_amp
 from opencc import OpenCC
-from ltp import LTP
+# from ltp import LTP
 # import synonyms
 
 
-nltk.download("punkt")
+# nltk.download("punkt")
 
 
 class WikipediaTextDatasetParagraphsSentences(Dataset):
@@ -45,10 +45,10 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             self.t2s = OpenCC('t2s').convert
             self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
             self.ensure_ascii = False
-            self.ltp = LTP()
+            # self.ltp = LTP()
         else:
             self.t2s = lambda x:x
-            self.sent_tokenizer = nltk.sent_tokenize
+            # self.sent_tokenizer = nltk.sent_tokenize
             self.ensure_ascii = True
 
         if os.path.exists(cached_features_file) and (self.hparams is None or not self.hparams.overwrite_data_cache):
