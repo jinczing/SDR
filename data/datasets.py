@@ -41,9 +41,10 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
         self.block_size = block_size
         self.tokenizer = tokenizer
 
+        self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
+
         if self.hparams.language is 'chinese':
             self.t2s = OpenCC('t2s').convert
-            self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
             self.ensure_ascii = False
             # self.ltp = LTP()
         else:
