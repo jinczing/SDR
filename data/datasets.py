@@ -139,15 +139,16 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
             matching_table = torch.zeros(len(self.examples), len(self.examples)).bool()
             with open(path, 'r') as f:
                 reader = csv.reader(f)
+                reader = list(reader)
                 for i, r in enumerate(reader):
                     if not i:
                         continue
-                    l = list(map(int, r))
-                    if l[0] not in inds_table or l[1] not in inds_table:
-                        continue
-                    # print(l[0], l[1], inds_table.index(l[0]), inds_table.index(l[1]))
-                    matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
-                    matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
+                    if r[::-1] in reader:
+                        l = list(map(int, r))
+                        if l[0] not in inds_table or l[1] not in inds_table:
+                            continue
+                        matching_table[inds_table.index(l[0]), inds_table.index(l[1])] = True
+                        # matching_table[inds_table.index(l[1]), inds_table.index(l[0])] = True
             self.matching_table = matching_table
         else:
             self.matching_table = None
