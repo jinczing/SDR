@@ -43,7 +43,7 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
 
         self.sent_tokenizer = lambda s: [(i+'。').strip() for i in s.split('。') if i is not '']
 
-        if self.hparams.language is 'chinese':
+        if self.hparams.language == 'chinese':
             self.t2s = OpenCC('t2s').convert
             self.ensure_ascii = False
             # self.ltp = LTP()
@@ -78,8 +78,6 @@ class WikipediaTextDatasetParagraphsSentences(Dataset):
                         else:
                             txt = json.dumps(sent[:max_sent_len])[:block_size]
                         tokenized_desc = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(txt))[:block_size]
-                        print(txt)
-                        print(tokenized_desc)
                         tup = (
                                 tokenized_desc,
                                 len(tokenized_desc),
