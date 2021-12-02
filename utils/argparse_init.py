@@ -72,7 +72,7 @@ def init_parse_argparse_default_params(parser, dataset_name=None, arch=None):
         "document_similarity": ["agricultures_public", "video_games", "wines",],
     }
     TEST_DATASET_OPTIONS = {
-        "document_similarity": ["agricultures_public_only", "video_games", "wines",],
+        "document_similarity": ["agricultures_public", "agricultures_public_only", "video_games", "wines",],
     }
     parser.add_argument(
         "--dataset_name",
